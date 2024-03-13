@@ -7,16 +7,16 @@ import { InputField } from './InputField';
 import { Dropdown } from './Dropdown';
 import { Icon } from '@iconify/react/dist/iconify.js';
 
-type FormType = {
+interface FormType {
   name: string;
   lastname: string;
   email: string;
   position: string;
   level: string;
-};
+}
 
 export const Form = () => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<FormType>({
     name: '',
     lastname: '',
     email: '',
@@ -33,34 +33,32 @@ export const Form = () => {
       const id = params.id?.toString() || undefined;
       if (!id) return;
       setIsNew(false);
-      const response = await fetch(
-        `https://mern-inventory-system.onrender.com/record/${params.id?.toString()}`
-      );
-      if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        console.error(message);
-        return;
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/record/${params.id?.toString()}`
+        );
+        if (!response.ok) {
+          throw new Error(`An error has occured: ${response.status}`);
+        }
+        const record: FormType = await response.json();
+        if (!record) {
+          console.warn(`Record with id ${id} not found`);
+          navigate('/');
+          return;
+        }
+        setForm(record);
+      } catch (error) {
+        console.error('A problem occurred with your fetch operation: ', error);
       }
-      const record = await response.json();
-      if (!record) {
-        console.warn(`Record with id ${id} not found`);
-        navigate('/');
-        return;
-      }
-      setForm(record);
     };
     fetchRecord();
-    return;
-  }, [navigate, params.id]);
+  }, [params.id, navigate]);
 
   const updateForm = (value: Partial<FormType>) => {
     return setForm((prev) => {
       return { ...prev, ...value };
     });
   };
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,23 +73,20 @@ export const Form = () => {
       openModal();
       return;
     }
-    const person = { ...form };
+    const person: FormType = { ...form };
     try {
-      let response;
+      let response: Response;
       if (isNew) {
-        response = await fetch(
-          'https://mern-inventory-system.onrender.com/record',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(person),
-          }
-        );
+        response = await fetch(`${import.meta.env.VITE_API_URL}/record`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(person),
+        });
       } else {
         response = await fetch(
-          `https://mern-inventory-system.onrender.com/record/${params.id}`,
+          `${import.meta.env.VITE_API_URL}/record/${params.id}`,
           {
             method: 'PATCH',
             headers: {
@@ -102,9 +97,7 @@ export const Form = () => {
         );
       }
       if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        console.error(message);
-        return;
+        throw new Error(`An error has occured: ${response.status}`);
       }
     } catch (error) {
       console.error('A problem occurred with your fetch operation: ', error);
@@ -113,6 +106,10 @@ export const Form = () => {
       navigate('/');
     }
   };
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
