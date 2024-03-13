@@ -4,67 +4,72 @@ import { Table } from './Table';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import Empty from '../../assets/Empty.svg';
 
-type RecordType = {
+interface RecordType {
   _id: number;
   name: string;
   lastname: string;
   email: string;
   position: string;
   level: string;
-};
+}
 
 export const RecordList = () => {
   const [records, setRecords] = useState<RecordType[]>([]);
 
   useEffect(() => {
     const fetchRecords = async () => {
-      const response = await fetch(
-        'https://mern-inventory-system.onrender.com/record'
-      );
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/record`);
       if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        console.error(message);
-        return;
+        throw new Error(`An error has occured: ${response.status}`);
       }
-      const records = await response.json();
+      const records: RecordType[] = await response.json();
       setRecords(records);
     };
     fetchRecords();
   }, [records.length]);
 
   const deleteRecord = async (id: number) => {
-    await fetch(`https://mern-inventory-system.onrender.com/record/${id}`, {
-      method: 'DELETE',
-    });
-    const newRecords = records.filter((record) => record._id !== id);
-    setRecords(newRecords);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/record/${id}`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`An error has occured: ${response.status}`);
+      }
+      const newRecords = records.filter((record) => record._id !== id);
+      setRecords(newRecords);
+    } catch (error) {
+      console.error('A problem occurred with your fetch operation: ', error);
+    }
   };
 
   return (
     <>
       <div className='text-right'>
-        <NavLink to='/create' className='btn btn-ghost mb-4 w-full sm:w-max'>
+        <NavLink to='/create' className='btn btn-outline mb-4 w-full sm:w-max'>
           <Icon icon='heroicons-outline:plus' width='1.2em' height='1.2em' />
           Add new record
         </NavLink>
       </div>
-      <div className='container mx-auto'>
-        <div className='overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative'>
-          {!records.length ? (
-            <div className='grid place-content-center bg-white px-4'>
-              <div className='text-center'>
-                <img src={Empty} alt='Empty' className='w-96 mx-auto' />
-                <h1 className='mt-6 text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
-                  Uh-oh!
-                </h1>
-                <p className='mt-4 text-gray-500'>
-                  We couldn't find any intern records at the moment. Please
-                  check back later or consider adding new records if you have
-                  any.
-                </p>
-              </div>
-            </div>
-          ) : (
+      {!records.length ? (
+        <div className='grid place-content-center bg-white px-4'>
+          <div className='text-center'>
+            <img src={Empty} alt='Empty' className='w-96 mx-auto' />
+            <h1 className='mt-6 text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
+              Uh-oh!
+            </h1>
+            <p className='mt-4 text-gray-500'>
+              We couldn't find any intern records at the moment. Please check
+              back later or consider adding new records if you have any.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className='container mx-auto'>
+          <div className='overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative'>
             <table className='border-collapse table-auto min-w-full whitespace-no-wrap bg-white table-striped relative'>
               <thead className='ltr:text-left rtl:text-right'>
                 <tr className='text-left'>
@@ -95,9 +100,9 @@ export const RecordList = () => {
                 ))}
               </tbody>
             </table>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
