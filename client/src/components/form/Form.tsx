@@ -34,7 +34,7 @@ export const Form = () => {
       if (!id) return;
       setIsNew(false);
       const response = await fetch(
-        `http://localhost:5000/record/${params.id?.toString()}`
+        `https://mern-inventory-system.onrender.com/record/${params.id?.toString()}`
       );
       if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
@@ -79,21 +79,27 @@ export const Form = () => {
     try {
       let response;
       if (isNew) {
-        response = await fetch('http://localhost:5000/record/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(person),
-        });
+        response = await fetch(
+          'https://mern-inventory-system.onrender.com/record',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(person),
+          }
+        );
       } else {
-        response = await fetch(`http://localhost:5000/record/${params.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(person),
-        });
+        response = await fetch(
+          `https://mern-inventory-system.onrender.com/record/${params.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(person),
+          }
+        );
       }
       if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
