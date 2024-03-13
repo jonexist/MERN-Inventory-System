@@ -1,9 +1,9 @@
 import * as dotenv from 'dotenv';
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, Db, ServerApiVersion } from 'mongodb';
 
 dotenv.config();
 
-const uri = process.env.ATLAS_URI || '';
+const uri: string = process.env.ATLAS_URI || '';
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -12,16 +12,18 @@ const client = new MongoClient(uri, {
   },
 });
 
-async () => {
+const connectToDb = async (): Promise<void> => {
   try {
     await client.connect();
     await client.db('admin').command({ ping: 1 });
     console.log('Connected to the database');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error connecting to the database', error);
   }
 };
 
-const db = client.db('interns');
+connectToDb();
+
+const db: Db = client.db('interns');
 
 export default db;
