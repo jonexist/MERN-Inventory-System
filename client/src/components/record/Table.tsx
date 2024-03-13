@@ -39,12 +39,12 @@ export const Table: React.FC<RecordProps> = ({ record, deleteRecord }) => {
         </span>
       </td>
       <td className='border-dashed border-t border-gray-200'>
-        <span className='text-gray-700 px-4 py-3 flex items-center'>
-          {record.email}
+        <span className='text-blue-700 underline px-4 py-3 flex items-center'>
+          <a href={`mailto:${record.email}`}>{record.email}</a>
         </span>
       </td>
       <td>
-        <div className='flex gap-3'>
+        <div className='space-x-5'>
           <Link
             to={`/edit/${record._id}`}
             className='btn btn-primary rounded-md text-slate-50'
