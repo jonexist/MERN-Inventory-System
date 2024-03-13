@@ -1,4 +1,4 @@
-import express from 'express';
+import * as express from 'express';
 import db from '../db/connection';
 import { ObjectId } from 'mongodb';
 
