@@ -18,7 +18,9 @@ export const RecordList = () => {
 
   useEffect(() => {
     const fetchRecords = async () => {
-      const response = await fetch('http://localhost:5000/record/');
+      const response = await fetch(
+        'https://mern-inventory-system.onrender.com/record'
+      );
       if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
         console.error(message);
@@ -31,7 +33,7 @@ export const RecordList = () => {
   }, [records.length]);
 
   const deleteRecord = async (id: number) => {
-    await fetch(`http://localhost:5000/record/${id}`, {
+    await fetch(`https://mern-inventory-system.onrender.com/record/${id}`, {
       method: 'DELETE',
     });
     const newRecords = records.filter((record) => record._id !== id);
