@@ -3,13 +3,13 @@ import db from '../db/connection';
 import { ObjectId } from 'mongodb';
 import { Request, Response } from 'express';
 
-interface Record {
+type Record = {
   name: string;
   lastname: string;
   email: string;
   position: string;
   level: string;
-}
+};
 
 const router = express.Router();
 const collection = db.collection<Record>('records');
