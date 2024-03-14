@@ -7,13 +7,13 @@ import { InputField } from './InputField';
 import { Dropdown } from './Dropdown';
 import { Icon } from '@iconify/react/dist/iconify.js';
 
-interface FormType {
+type FormType = {
   name: string;
   lastname: string;
   email: string;
   position: string;
   level: string;
-}
+};
 
 export const Form = () => {
   const [form, setForm] = useState<FormType>({

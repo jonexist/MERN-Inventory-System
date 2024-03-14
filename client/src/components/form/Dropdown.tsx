@@ -1,17 +1,15 @@
 import React from 'react';
 
-interface Option {
-  id: number;
-  label: string;
-  value: string;
-}
-
-interface DropdownProps {
+type DropdownProps = {
   name: string;
   value: string;
-  options: Option[];
+  options: {
+    id: number;
+    label: string;
+    value: string;
+  }[];
   onChange: (value: string) => void;
-}
+};
 
 export const Dropdown: React.FC<DropdownProps> = ({
   name,
